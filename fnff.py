@@ -56,7 +56,7 @@ def load_animacy_sentences_and_labels(datafile):
     loads the data set
     """
     input = [line.strip().split("\t") for line in open(datafile)]
-    sentences = [w for w,label in input]
+    sentences = [[w] for w,label in input]
     labels = [label for sentence, label in input]
     return sentences, labels
 
