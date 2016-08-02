@@ -1,7 +1,8 @@
-__author__ = "bplank"
+__author__ = "hmartinez"
 
 """
-A first version of a simple feedforward NN for animacy classification
+A first version of a simple feedforward NN for FN classification
+Heavily based on Barbara Plank's example FF nn
 """
 import numpy as np
 np.random.seed(113) #set seed before any keras import
@@ -43,7 +44,7 @@ def load_data(trainfile, devfile, testfile):
 
 
     ### convert labels to one-hot
-    label2idx = {label: i for i, label in enumerate(set(train_y))}
+    label2idx = {label: i for i, label in enumerate(set(train_y+test_y+dev_y))}
     num_labels = len(label2idx.keys())
     train_y = np_utils.to_categorical([label2idx[label] for label in train_y], nb_classes=num_labels)
     dev_y = np_utils.to_categorical([label2idx[label] for label in dev_y], nb_classes=num_labels)
@@ -63,9 +64,9 @@ def load_animacy_sentences_and_labels(datafile):
 def main():
     
     parser = argparse.ArgumentParser()
-    parser.add_argument('train', help="animacy data training file")
-    parser.add_argument('dev', help="animacy data dev file")
-    parser.add_argument('test', help="animacy data test file")
+    parser.add_argument('--train', help="data/fn_train.conll")
+    parser.add_argument('--dev', help="data/fn_dev.conll")
+    parser.add_argument('--test', help="",default='data/fn_test.conll')
     parser.add_argument('--iters', help="epochs (iterations)", type=int, default=10)
     parser.add_argument('--featcolums',default=1)
     args = parser.parse_args()
