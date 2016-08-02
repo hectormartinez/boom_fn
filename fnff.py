@@ -97,7 +97,7 @@ def main():
 
     # now the embedding layer will encode the input sequence
     # into a sequence of dense 128-dimensional vectors.
-    embeds = Embedding(output_dim=128, input_dim=vocabulary_size, input_length=5)(main_input)
+    embeds = Embedding(output_dim=128, input_dim=vocabulary_size, input_length=args.featcolums)(main_input)
     flatten = Flatten()(embeds) # we flatten it as Dense expects a 2D input
     dense = Dense(64, activation='tanh')(flatten)
 
