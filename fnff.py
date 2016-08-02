@@ -28,9 +28,10 @@ def get_index(word, index_from, word2idx, freeze=False):
 
 def load_data(trainfile, devfile, testfile):
     ### load data
-    train_sents, train_y = load_animacy_sentences_and_labels(trainfile)
-    dev_sents, dev_y = load_animacy_sentences_and_labels(devfile)
-    test_sents, test_y = load_animacy_sentences_and_labels(testfile)
+    # notice we overwrite nfeats 3 time - it should not be a problem if files have constant column size
+    train_sents, train_y,n_feats = load_string_features_and_labels(trainfile)
+    dev_sents, dev_y,n_feats = load_string_features_and_labels(devfile)
+    test_sents, test_y,n_feats = load_string_features_and_labels(testfile)
 
     ### create mapping word to indices
     word2idx = {"_UNK": 0}  # reserve 0 for OOV
@@ -50,16 +51,16 @@ def load_data(trainfile, devfile, testfile):
     dev_y = np_utils.to_categorical([label2idx[label] for label in dev_y], nb_classes=num_labels)
     test_y = np_utils.to_categorical([label2idx[label] for label in test_y], nb_classes=num_labels)
 
-    return X_train, train_y, X_dev, dev_y, X_test, test_y, word2idx, label2idx
-
-def load_animacy_sentences_and_labels(datafile):
+    return X_train, train_y, X_dev, dev_y, X_test, test_y, word2idx, label2idx, n_feats
+def load_string_features_and_labels(datafile):
     """
     loads the data set
     """
     input = [line.strip().split("\t") for line in open(datafile)]
-    sentences = [[w] for w,label in input]
+    sentences = [w.split(" ") for w,label in input]
+    n_feats = len(sentences[0])
     labels = [label for sentence, label in input]
-    return sentences, labels
+    return sentences, labels, n_feats
 
 def main():
     
@@ -68,12 +69,11 @@ def main():
     parser.add_argument('--dev', default="data/fn_dev.tsv")
     parser.add_argument('--test', help="",default='data/fn_test.tsv')
     parser.add_argument('--iters', help="epochs (iterations)", type=int, default=10)
-    parser.add_argument('--featcolums',default=1)
     args = parser.parse_args()
     
     ## read input data
     print("load data..")
-    X_train, y_train, X_dev, y_dev, X_test, y_test, word2idx, tag2idx = load_data(args.train, args.dev, args.test)
+    X_train, y_train, X_dev, y_dev, X_test, y_test, word2idx, tag2idx,n_feats = load_data(args.train, args.dev, args.test)
     print(X_train[:3])
 
     print("#train instances: {}\n#test instances: {}\n#dev instances: {}".format(len(X_train),len(X_test), len(X_dev)))
@@ -92,12 +92,12 @@ def main():
     # each layer is a function and can be applied to another layer
     # you can name each layer: name='main_input'
 
-    # input: a sequence  of 5 integers, each representing a word (index between 0 and vocab_size).
-    main_input = Input(shape=(args.featcolums,), dtype='int32', name='main_input')
+    # input: a sequence  of n_feats integers, each representing a word (index between 0 and vocab_size).
+    main_input = Input(shape=(n_feats,), dtype='int32', name='main_input')
 
     # now the embedding layer will encode the input sequence
     # into a sequence of dense 128-dimensional vectors.
-    embeds = Embedding(output_dim=128, input_dim=vocabulary_size, input_length=args.featcolums)(main_input)
+    embeds = Embedding(output_dim=128, input_dim=vocabulary_size, input_length=n_feats)(main_input)
     flatten = Flatten()(embeds) # we flatten it as Dense expects a 2D input
     dense = Dense(64, activation='tanh')(flatten)
 
@@ -110,7 +110,7 @@ def main():
     print("compile model..")
     model.compile(loss='categorical_crossentropy', optimizer="sgd", metrics=['accuracy'])
     print("fit model..")
-    #model.fit(X_train, y_train,nb_epoch=args.iters,batch_size=100) #, validation_data=(X_dev, y_dev))
+    model.fit(X_train, y_train,nb_epoch=args.iters,batch_size=100) #, validation_data=(X_dev, y_dev))
 
     score = model.evaluate(X_test, y_test)
     print("evaluate model..")
