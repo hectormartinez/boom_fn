@@ -64,8 +64,8 @@ def load_animacy_sentences_and_labels(datafile):
 def main():
     
     parser = argparse.ArgumentParser()
-    parser.add_argument('--train', help="data/fn_train.conll")
-    parser.add_argument('--dev', help="data/fn_dev.conll")
+    parser.add_argument('--train', default="data/fn_train.conll")
+    parser.add_argument('--dev', default="data/fn_dev.conll")
     parser.add_argument('--test', help="",default='data/fn_test.conll')
     parser.add_argument('--iters', help="epochs (iterations)", type=int, default=10)
     parser.add_argument('--featcolums',default=1)
