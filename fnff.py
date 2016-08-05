@@ -74,7 +74,8 @@ def main():
     ## read input data
     print("load data..")
     X_train, y_train, X_dev, y_dev, X_test, y_test, word2idx, tag2idx,n_feats = load_data(args.train, args.dev, args.test)
-    print(X_train[:3])
+    id2tag = {v: k for k, v in map.items()}
+
 
     print("#train instances: {}\n#test instances: {}\n#dev instances: {}".format(len(X_train),len(X_test), len(X_dev)))
     assert(len(X_train)==len(y_train))
@@ -117,7 +118,7 @@ def main():
     score, acc = model.evaluate(X_test, y_test)
     print('Test accuracy:', acc)
     predidx=model.predict(X_test)
-    print([np.argmax(p) for p in predidx])
+    print([id2tag[np.argmax(p)] for p in predidx])
 
 
 if __name__ == "__main__":
