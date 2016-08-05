@@ -116,7 +116,11 @@ def main():
     print("evaluate model..")
     score, acc = model.evaluate(X_test, y_test)
     print('Test accuracy:', acc)
-    predidx= model.predict_classes(X_test)
+    predidx=model.predict(X_test)
     print(predidx)
+    print(predidx[0])
+    print(predidx.shape)
+
+
 if __name__ == "__main__":
     main()
