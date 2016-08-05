@@ -68,7 +68,7 @@ def main():
     parser.add_argument('--train', default="data/fn_train.tsv")
     parser.add_argument('--dev', default="data/fn_dev.tsv")
     parser.add_argument('--test', help="",default='data/fn_test.tsv')
-    parser.add_argument('--iters', help="epochs (iterations)", type=int, default=10)
+    parser.add_argument('--iters', help="epochs (iterations)", type=int, default=4)
     args = parser.parse_args()
     
     ## read input data
