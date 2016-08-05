@@ -100,7 +100,7 @@ def main():
     # into a sequence of dense 128-dimensional vectors.
     embeds = Embedding(output_dim=128, input_dim=vocabulary_size, input_length=n_feats)(main_input)
     flatten = Flatten()(embeds) # we flatten it as Dense expects a 2D input
-    dense = Dense(64, activation='tanh')(flatten)
+    dense = Dense(128, activation='tanh')(flatten)
 
     # finally the softmax (logistic) output layer
     main_loss = Dense(num_labels, activation='softmax', name='main_output')(dense)
