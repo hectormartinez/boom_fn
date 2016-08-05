@@ -116,7 +116,7 @@ def main():
     print("evaluate model..")
     score, acc = model.evaluate(X_test, y_test)
     print('Test accuracy:', acc)
-    predidx=[np.argmax(p) for p in model.predict(X_test)]
+    predidx= model.predict_classes(X_test)
     print(predidx)
 if __name__ == "__main__":
     main()
